@@ -12,16 +12,17 @@ Simple, light-weight package to sign URL using HMAC hash function and in-memory 
 First Import the class.
 ```javascript
 // CommonJs
-const UrlSigner = require('@aland20/url-signer')
+const UrlSigner = require('@aland20/url-signer');
+
 // ES Modules
-import UrlSigner from '@aland20/url-signer'
+import UrlSigner from '@aland20/url-signer';
 ```
 
 ### Create an Instance
-After importing, you can create an instance of the class by passiing the following:
-- `ttl`: Amount of seconds to expire.
+You can create an instance of the class by passing the following:
+- `ttl`: Expiration Time in seconds.
 - `secret`: Secret key from server-side. Client-side must not have access to the secret key.
-- `payload`: Data to be encrypted.
+- `payload`: Data to be encrypted can be a Javascript object or primitive data types.
 
 ```js
 const signer = new UrlSigner({
@@ -36,14 +37,15 @@ const signer = new UrlSigner({
 
 ### Sign Your Url
 To sign url, simply pass the url to the `signUrl` function which takes:
- - `url`: (string): Your desired url to sign.
- - `payload`: (optional): Update the payload if needed.
+ - `url` (string): Your desired url to sign.
+ - `payload` (optional): Update the previous payload if needed.
 
 `signUrl` function returns an object that has the following properties:
- - `hmac`: (string): hmac hash.
- - `url`: (string): signed url.
+ - `hmac` (string): hmac hash.
+ - `url` (string): signed url.
 ```js
 const url = 'https://api.example.com/users/confirmation?email=test@example.com';
+
 const { url, hmac } = signer.signUrl(url); // signer is the class instance
 ```
 
@@ -53,12 +55,14 @@ To verify a signed url, you have to access the same instance of UrlSigner that s
 
 ```js
 const url = new URL(currentUrl); // Creating URL instance
+
 const signature = url.searchParams.get('signature'); // Get signature param from url
+
 const isValidSignature = signer.verifyUrl(signature); // true
 ```
 
 ### Expired Signed Url
-If you verify the url after the ttl passed when you create the instance, it returns false.
+If you verify the url after the `ttl` passed during the instance creation, it returns false.
 ```js
 ...{
     ttl: 120, // 2 minutes
