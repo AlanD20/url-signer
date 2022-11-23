@@ -1,6 +1,7 @@
 import UrlSigner from '../src/index';
 import { hash } from '../src/hmac';
 
+
 describe('Test Signing & Verifying URL...', () => {
 
   const exampleUrl = 'https://api.example.com/users/confirmation?email=test@example.com';

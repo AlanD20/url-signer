@@ -6,21 +6,29 @@ import TTLCache from '@isaacs/ttlcache';
 
 export interface UrlSignerParams extends HashObj {
   ttl: number;
+  keyPrefix?: string;
 }
 
 export type SignUrl = { hmac: string; url: string; };
 
+export type UrlSignature = string | {
+  url: string,
+  keyPrefix: string;
+}
 
 export default class UrlSigner {
 
-  public cache: any;
-  public secret: string;
+  private keyPrefix: string;
+  private cache: any;
+  private secret: string;
   public payload: Payload;
 
-  constructor({ ttl, secret, payload }: UrlSignerParams) {
+  constructor({ ttl, secret, payload, keyPrefix }: UrlSignerParams) {
 
     this.secret = secret;
     this.payload = payload;
+
+    this.keyPrefix = keyPrefix ? `${keyPrefix}_signature` : 'signature';
 
     this.cache = new TTLCache({
       ttl: ttl * 1000,
@@ -28,7 +36,7 @@ export default class UrlSigner {
     });
   }
 
-  signUrl(url: string, payload?: Payload): SignUrl {
+  public signUrl(url: string, payload?: Payload): SignUrl {
 
     if (this.cache.get(url) || this.cache.size === 1) {
       throw new Error('URL is already signed.');
@@ -40,8 +48,9 @@ export default class UrlSigner {
       secret: this.secret,
       payload: this.payload
     });
+
     const u = new URL(url);
-    u.searchParams.append('signature', hmac);
+    u.searchParams.append(this.keyPrefix, hmac);
     const safeUrl = u.href;
 
     const data = { hmac, url: safeUrl };
@@ -50,26 +59,40 @@ export default class UrlSigner {
     return data;
   }
 
-  verifyUrl(signatureUrl: string): boolean {
+  public verifyUrl(uri: UrlSignature, hashObject?: HashObj): boolean {
 
-    let signature = signatureUrl;
+    let signature = this.getSignatureFromUrl(uri);
 
-    if (!this.cache.get(signature)) {
-      return false;
+    let originalHash = { secret: this.secret, payload: this.payload };
+
+    if (hashObject) {
+      originalHash = hashObject
     }
 
-    const storedPayload: SignUrl = this.cache.get(signature);
+    return verify(signature, originalHash);
+  }
 
-    if (signature !== storedPayload?.hmac) {
-      return false;
+  private getSignatureFromUrl(url: UrlSignature): string {
+
+    let signature: string | null = typeof url === 'string' ? url : url.url;
+
+    if (typeof url === 'object') {
+      this.setPrefix(url.keyPrefix);
     }
 
-    return verify(
-      signature, {
-      secret: this.secret,
-      payload: this.payload
+    if (signature.startsWith('http')) {
+      const u = new URL(signature);
+      signature = u.searchParams.get(this.keyPrefix);
     }
-    );
+
+    return signature ? signature : '';
+  }
+
+  private setPrefix(prefix?: string): void {
+
+    this.keyPrefix = prefix ? `${prefix}_signature` : 'signature';
   }
 
 }
+
+module.exports = UrlSigner;
