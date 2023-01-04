@@ -3,9 +3,10 @@
   "author": "AlanD20",
   "private": false,
   "description": "Simple, light-weight package to sign URL using HMAC hash function and in-memory caching.",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "./dist/url-signer.cjs",
+  "module": "./dist/url-signer.esm",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
@@ -26,19 +27,15 @@
     "build": "tsdx build",
     "test": "tsdx test"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
-  },
   "homepage": "https://github.com/AlanD20/url-signer",
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/url-signer.cjs",
+      "import": "./dist/url-signer.esm"
+    },
+    "./package.json": "./package.json"
   },
-  "module": "dist/url-signer.esm.js",
   "devDependencies": {
     "husky": "^8.0.1",
     "tsdx": "^0.14.1",
@@ -51,5 +48,16 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
   }
 }
