@@ -21,7 +21,6 @@ export function hash({ secret, payload }: HashObj): string {
     .digest('base64');
 }
 
-
 export function verify(
   signature: string,
   { secret, payload }: HashObj
