@@ -16,11 +16,12 @@ package.
 
 ### Install
 
-Install the package with yarn or npm.
+Install the package.
 
 ```bash
-yarn add @aland20/url-signer
 npm install @aland20/url-signer
+pnpm install @aland20/url-signer
+yarn add @aland20/url-signer
 ```
 
 ### Import
@@ -77,7 +78,7 @@ const exampleUrl = 'https://api.example.com/users/confirmation?email=test@exampl
 
 const { url, hmac } = signer.signUrl(exampleUrl); // signer is the class instance
 
-// The object contians following values:
+// The object contains following values:
 {
   hmac: 'jE7zP9qE+VHs9Zt4Gqwc8/svJ23z92h3w2P+8Tou8YE=',
   url: 'https://api.example.com/users/confirmation?email=test%40example.com&ad_signature=jE7zP9qE%2BVHs9Zt4Gqwc8%2FsvJ23z92h3w2P%2B8Tou8YE%3D'
@@ -92,7 +93,7 @@ signed the url, and use `verifyUrl` function.
 ~~- **Notice**: Without having access to the same instance causes the
 verification to fail.~~
 
-The new version provides additional argument that you may pass the exact same
+Since version `0.2.3`, the package provides additional argument that you may pass the exact same
 `payload` and `secret` to get the desired result.
 
 Another feature is that you can pass the signature value or full url. If you
