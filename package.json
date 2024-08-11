@@ -3,7 +3,7 @@
   "author": "AlanD20",
   "private": false,
   "description": "Simple, light-weight package to sign URL using HMAC hash function and in-memory caching.",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "license": "MIT",
   "main": "./dist/url-signer.cjs",
   "module": "./dist/url-signer.esm",

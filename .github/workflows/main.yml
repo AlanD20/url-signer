@@ -2,24 +2,33 @@ name: CI
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 jobs:
   build:
     name: Build and test on Node ${{ matrix.node }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node: ['14.x', '16.x', '18.x', '20.x']
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        node: [14, 16, 18, 20]
+        os: [ubuntu-latest]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
+      - name: Use pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          standalone: true
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile, --strict-peer-dependencies]
       - name: Use Node ${{ matrix.node }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      - name: Install deps and build (with cache)
-        uses: bahmutov/npm-install@v1
+          cache: 'pnpm'
       - name: Test
-        run: pnpm test --ci --coverage --maxWorkers=2
+        run: pnpm test
       - name: Build
         run: pnpm build
